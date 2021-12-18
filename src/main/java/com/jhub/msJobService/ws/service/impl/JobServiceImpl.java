@@ -17,30 +17,30 @@ public class JobServiceImpl implements JobService {
 
 	private final JobRepository jobRepository;
 	private final JMapper<JobEntity, JobDto> jobDtoToJobEntityMapper;
-	private final JMapper<JobDto, JobEntity> jobEntityToJobDto;
+	private final JMapper<JobDto, JobEntity> jobEntityToJobDtoMapper;
 
 	public JobServiceImpl(JobRepository jobRepository) {
 
 		this.jobRepository = jobRepository;
 		this.jobDtoToJobEntityMapper = new JMapper<>(JobEntity.class, JobDto.class);
-		this.jobEntityToJobDto = new JMapper<>(JobDto.class, JobEntity.class);
+		this.jobEntityToJobDtoMapper = new JMapper<>(JobDto.class, JobEntity.class);
 
 	}
 
 	@Override
 	public List<JobDto> getAllJob() {
-		return this.jobRepository.findAll().stream().map(x -> jobEntityToJobDto.getDestination(x))
+		return this.jobRepository.findAll().stream().map(x -> jobEntityToJobDtoMapper.getDestination(x))
 				.collect(Collectors.toList());
 	}
 
 	@Override
 	public JobDto getJobById(String Id) {
-		return this.jobRepository.findById(Id).map(x -> jobEntityToJobDto.getDestination(x)).get();
+		return this.jobRepository.findById(Id).map(x -> jobEntityToJobDtoMapper.getDestination(x)).get();
 	}
 
 	@Override
 	public JobDto createJob(JobDto jobDto) {
-		return jobEntityToJobDto
+		return jobEntityToJobDtoMapper
 				.getDestination(this.jobRepository.save(jobDtoToJobEntityMapper.getDestination(jobDto)));
 	}
 
@@ -52,7 +52,7 @@ public class JobServiceImpl implements JobService {
 			x.setJoiningDate(jobDto.getJoiningDate());
 			x.setTitle(jobDto.getTitle());
 			return x;
-		}).map(x -> this.jobEntityToJobDto.getDestination(this.jobRepository.save(x))).get();
+		}).map(x -> this.jobEntityToJobDtoMapper.getDestination(this.jobRepository.save(x))).get();
 	}
 
 	@Override
